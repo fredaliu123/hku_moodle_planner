@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HKU Moodle Planner</title>
+    <link rel="stylesheet" href="./styles.css?v=30" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="school-logo" role="img" aria-label="The University of Hong Kong logo"></div>
+          <div><h1>HKU Moodle Planner</h1><p>Verified from Moodle</p></div>
+        </div>
+        <nav class="nav-list" aria-label="Planner sections">
+          <a class="nav-item active" href="#dashboard" data-view="dashboard"><span class="nav-icon dashboard-icon" aria-hidden="true"></span><span>Dashboard</span></a>
+          <a class="nav-item" href="#courses" data-view="courses"><span class="nav-icon courses-icon" aria-hidden="true"></span><span>Courses</span></a>
+          <a class="nav-item" href="#grades" data-view="grades"><span class="nav-icon grades-icon" aria-hidden="true"></span><span>Grades</span></a>
+          <a class="nav-item" href="#calendar" data-view="calendar"><span class="nav-icon calendar-icon" aria-hidden="true"></span><span>Calendar</span></a>
+          <a class="nav-item" href="#gpa" data-view="gpa"><span class="nav-icon gpa-icon" aria-hidden="true"></span><span>GPA</span></a>
+          <a class="nav-item" href="#planner" data-view="planner"><span class="nav-icon planner-icon" aria-hidden="true"></span><span>Planner</span></a>
+        </nav>
+        <div class="sidebar-note">
+          <a id="moodleLink" href="https://moodle.hku.hk/" target="_blank" rel="noreferrer">Open HKU Moodle & Mark Sync</a>
+          <div class="sync-dock" aria-live="polite">
+            <i class="sync-mark" id="syncMark" aria-hidden="true"></i>
+            <div><strong>Moodle synced</strong><span id="lastSyncLabel">Not yet marked</span></div>
+          </div>
+        </div>
+      </aside>
+
+      <main class="workspace">
+        <header class="topbar" id="dashboard">
+          <div><p class="date-label" id="todayLabel"></p><h2 id="pageTitle">Dashboard</h2><p class="view-indicator" id="viewIndicator">Viewing Dashboard</p></div>
+          <div class="topbar-actions">
+            <div class="topbar-search-cluster">
+              <div class="course-overview-strip" id="courseCreditSummary" aria-label="Credits" aria-live="polite"></div>
+              <input id="searchInput" type="search" placeholder="Search courses, assessments, or deadlines" />
+            </div>
+            <button id="exportButton" class="button secondary" type="button" title="Download a backup copy of your planner data.">Download Backup</button>
+            <div class="theme-menu">
+              <button id="themeToggleButton" class="button secondary" type="button" aria-expanded="false" aria-controls="themeSettings">Theme</button>
+              <div class="theme-popover" id="themePopover" hidden>
+                <div class="theme-popover-head"><strong>Theme</strong><span>Choose a gentle planner vibe.</span></div>
+                <div class="theme-settings" id="themeSettings"></div>
+              </div>
+            </div>
+            <button id="importButton" class="button primary" type="button">Study Dropbox</button>
+          </div>
+        </header>
+
+        <section class="notice study-dropbox" id="studyDropBox">
+          <div><h3>Study Dropbox</h3><p>Drop course files or paste lecture text here, then create a quick study pack.</p></div>
+          <label class="drop-zone" id="dropZone">
+            <input id="studyFiles" type="file" multiple />
+            <strong>Drag files here</strong>
+            <span>Text files are read directly. For PDFs or slides, paste the key text below.</span>
+          </label>
+          <div class="study-tools">
+            <textarea id="studyText" placeholder="Paste lecture notes, readings, or Moodle text here."></textarea>
+            <div class="study-actions">
+              <button id="revisionButton" class="button secondary" type="button">Revision Notes</button>
+              <button id="mindMapButton" class="button secondary" type="button">Mind Map</button>
+              <button id="quizButton" class="button primary" type="button">Practice Quiz</button>
+            </div>
+            <div class="study-output" id="studyOutput">Your generated study pack will appear here.</div>
+          </div>
+        </section>
+
+        <section class="summary-grid">
+          <article class="metric red"><strong id="courseCount">0</strong><span>Courses</span></article>
+          <article class="metric amber"><strong id="deadlineCount">0</strong><span>Upcoming Calendar Items</span></article>
+          <article class="metric green"><strong id="gpaValue">0.00</strong><span>Editable GPA</span></article>
+          <article class="metric blue"><strong id="completionValue">0%</strong><span>Visible Grades Entered</span></article>
+        </section>
+
+        <section class="layout-grid">
+          <article class="panel page-panel" data-page="dashboard"><div class="panel-head"><div><h3>Today at a Glance</h3><p>Use the left tabs for one focused page at a time.</p></div></div><div class="dashboard-list"><a href="#grades" data-view-jump="grades">Open grade calculators</a><a href="#calendar" data-view-jump="calendar">Review upcoming Moodle items</a><a href="#gpa" data-view-jump="gpa">Check projected GPA</a></div></article>
+          <article class="panel wide page-panel dashboard-brief" data-page="dashboard"><div class="dashboard-focus-grid"><section class="dashboard-focus-card agenda-lane"><div class="panel-head"><div><h3>Today / This Week</h3><p>Quiz, assignment, attendance, and deadline dates. Tick only after you finish them.</p></div></div><div class="dashboard-checklist" id="dashboardChecklist"></div></section><section class="dashboard-focus-card signal-lane"><div class="panel-head"><div><h3>Target Alerts</h3><p>Courses that need attention to stay at 4.0+.</p></div></div><div class="dashboard-alerts" id="dashboardAlerts"></div></section></div></article>
+          <article class="panel wide page-panel" id="courses" data-page="courses"><div class="panel-head"><div><h3>Courses by Semester</h3><p>Use Courses for enrollment by semester: Sem 1, Sem 2, and Summer. Current Sem 1 courses stay fixed here.</p></div><button id="addCourseButton" class="button outline">Add Future Course</button></div><div class="course-term-tabs" id="courseTermTabs" role="tablist" aria-label="Course semesters"><button class="term-button active" type="button" data-course-term="sem1">Sem 1</button><button class="term-button" type="button" data-course-term="sem2">Sem 2</button><button class="term-button" type="button" data-course-term="summer">Summer</button></div><div class="course-editor" id="courseRows"></div></article>
+          <article class="panel wide page-panel" id="classWeekPanel" data-page="dashboard"><div class="panel-head class-calendar-head"><div><h3>Class Week</h3><p>Synced from the HKU class calendar, with curated tutorial corrections.</p></div><div class="week-controls"><button id="prevWeekButton" class="icon-button" type="button" aria-label="Previous week">‹</button><strong id="weekRangeLabel"></strong><button id="nextWeekButton" class="icon-button" type="button" aria-label="Next week">›</button><span class="class-kind lecture">lecture</span><span class="class-kind tutorial">tutorial</span><span class="class-kind course">course block</span></div></div><div class="class-week-grid" id="classWeekGrid"></div></article>
+          <article class="panel page-panel" id="calendar" data-page="calendar"><div class="panel-head"><div><h3>Upcoming Moodle Items</h3><p>From Moodle To do / Calendar.</p></div><button id="addDeadlineButton" class="button outline">Add Item</button></div><div class="deadline-list" id="deadlineList"></div></article>
+          <article class="panel wide page-panel" id="grades" data-page="grades"><div class="panel-head"><div><h3>Course Grade Calculators</h3><p>Track each course by weighted components, then see the future score needed for 4.0+.</p></div><button id="addAssessmentButton" class="button outline">Add Component</button></div><div class="component-board" id="componentBoard"></div></article>
+          <article class="panel page-panel" data-page="calendar"><div class="panel-head"><div><h3>Calendar</h3><p>Month snapshot for planning.</p></div><strong id="monthLabel"></strong></div><div class="calendar-grid" id="calendarGrid"></div></article>
+          <article class="panel wide page-panel" id="gpa" data-page="gpa"><div class="panel-head"><div><h3>Overall GPA Calculator</h3><p>Projected from each course calculator and credit weighting. Pass/fail courses stay out of GPA.</p></div><div class="gpa-total">Projected GPA <strong id="gpaFooter">0.00</strong></div></div><div class="table-wrap"><table><thead><tr><th>Course</th><th>Credits</th><th>Projected %</th><th>Projected Grade</th><th>Points</th></tr></thead><tbody id="gpaRows"></tbody></table></div></article>
+          <article class="panel page-panel" id="planner" data-page="planner"><div class="panel-head"><div><h3>Course Planner</h3><p>Use Planner for weekly workload and next actions for your current courses.</p></div></div><div class="planner-list" id="plannerList"></div></article>
+        </section>
+      </main>
+    </div>
+    <dialog id="entryDialog"><form method="dialog" class="dialog-card"><div class="dialog-head"><h3 id="dialogTitle">Add Item</h3><button value="cancel" class="close-button">×</button></div><div id="dialogFields" class="dialog-fields"></div><div class="dialog-actions"><button value="cancel" class="button secondary">Cancel</button><button value="save" class="button primary">Save</button></div></form></dialog>
+    <script src="./app.js?v=59"></script>
+  </body>
+</html>
